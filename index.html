@@ -11,7 +11,7 @@
 html,body{height:100%;margin:0}
 body{background:radial-gradient(circle at 50% 40%,#3b2a2e,#171012);color:#eee;font:15px Georgia,serif;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;touch-action:pan-y}
 
-/* LIBRO */
+/* LIBRO (dos páginas) */
 .book{--w:min(94vw,920px,calc((100vh - 130px)/.68));width:var(--w);height:calc(var(--w)*.68);font-size:calc(var(--w)/48);perspective:2400px;position:relative}
 .wrap{position:absolute;inset:0;transition:transform .8s ease}
 .leaf{position:absolute;left:50%;top:0;width:50%;height:100%;transform-origin:left center;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.5,.1,.3,1)}
@@ -21,48 +21,31 @@ body{background:radial-gradient(circle at 50% 40%,#3b2a2e,#171012);color:#eee;fo
 .back{transform:rotateY(180deg);border-radius:.6em 0 0 .6em}
 
 /* PÁGINA */
-.pg{background:#1d1c20;height:100%;padding:1.25em 1.5em;display:flex;flex-direction:column;gap:.8em;position:relative;overflow:hidden}
+.pg{background:#1d1c20;height:100%;padding:1.25em 1.5em;display:flex;flex-direction:column;gap:.6em;position:relative;overflow:hidden}
 .front .pg{box-shadow:inset 1.6em 0 1.6em -1em #000a}
 .back .pg{box-shadow:inset -1.6em 0 1.6em -1em #000a}
+.page-title{font:1em Caveat,cursive;color:#e0bd78;text-align:center;opacity:.65;min-height:1.1em}
+.photos{flex:1;min-height:0;display:flex;flex-direction:column;gap:.7em}
+.n{position:absolute;bottom:.4em;left:0;right:0;text-align:center;font:1.1em Caveat,cursive;opacity:.4}
 
-/* SLOT */
-.slot{min-height:0;display:flex;flex-direction:column;position:relative}
-.photo-title{font:1em Caveat,cursive;color:#e0bd78;text-align:center;opacity:.65;min-height:1.1em;margin-bottom:.25em}
-.pw{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center}
-.ph{position:absolute;background:#2c2b31;display:flex;align-items:center;justify-content:center;text-align:center;color:#8d8a99;cursor:pointer;overflow:hidden;font-size:.95em;transition:background .2s ease,transform .2s ease;border-radius:.15em}
+/* ESPACIO DE FOTO
+   .pw = zona disponible. .fit = contenedor medible.
+   .ph = marco: siempre del tamaño del espacio, con o sin foto. */
+.slot{flex:1;min-height:0;display:flex;flex-direction:column}
+.pw{flex:1;min-height:0;position:relative}
+.fit{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.ph{position:relative;width:100%;height:100%;background:#2c2b31;display:flex;align-items:center;justify-content:center;text-align:center;color:#8d8a99;cursor:pointer;overflow:hidden;font-size:.95em;border-radius:.15em;transition:background .2s ease}
 .ph:hover{background:#35343b}
-.ph:active{transform:scale(.995)}
-.ph img{width:100%;height:100%;display:block}
-
-/* HOJA HORIZONTAL: 2 fotos una debajo de la otra */
-.horizontal-page,.vertical-page{display:flex;flex-direction:column}
-.horizontal-page{gap:.45em}
-.vertical-page{gap:.5em}
-.horizontal-title,.vertical-title{font:1em Caveat,cursive;color:#e0bd78;text-align:center;opacity:.65;min-height:1.1em}
-.horizontal-photos{flex:1;min-height:0;display:flex;flex-direction:column;gap:.6em}
-.horizontal-photos .slot{flex:1;min-height:0}
-.horizontal-photos .photo-title,.vertical-photo .photo-title{display:none}
-.horizontal-photos .pw{flex:1;min-height:0;position:relative}
-.horizontal-photos .ph{position:absolute;inset:0;width:100%;height:100%}
-.horizontal-photos .ph img{object-fit:cover}
-
-/* HOJA VERTICAL: 1 foto */
-.vertical-photo{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
-.vertical-photo .slot{width:100%;height:100%;min-height:0;display:flex;flex-direction:column}
-.vertical-photo .pw{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative}
-.vertical-photo .ph{position:relative;width:58%;height:100%;min-height:0}
-.vertical-photo .ph img{object-fit:contain;background:#171519}
-.ph.vertical{background:#171519}
-.ph.vertical img{object-fit:contain}
-.ph.horizontal img{object-fit:cover}
-
-/* ESQUINEROS */
-.cr{position:absolute;inset:0;pointer-events:none;--c:#f3eee3;background:linear-gradient(135deg,var(--c) 50%,#0000 50%) 0 0/1.5em 1.5em no-repeat,linear-gradient(225deg,var(--c) 50%,#0000 50%) 100% 0/1.5em 1.5em no-repeat,linear-gradient(45deg,var(--c) 50%,#0000 50%) 0 100%/1.5em 1.5em no-repeat,linear-gradient(315deg,var(--c) 50%,#0000 50%) 100% 100%/1.5em 1.5em no-repeat}
+.ph.has{background:#171519}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* esquineros sobre el marco */
+.ph::after{content:"";position:absolute;inset:0;pointer-events:none;--c:#f3eee3;filter:drop-shadow(0 0 .12em #000b);background:linear-gradient(135deg,var(--c) 50%,#0000 50%) 0 0/1.5em 1.5em no-repeat,linear-gradient(225deg,var(--c) 50%,#0000 50%) 100% 0/1.5em 1.5em no-repeat,linear-gradient(45deg,var(--c) 50%,#0000 50%) 0 100%/1.5em 1.5em no-repeat,linear-gradient(315deg,var(--c) 50%,#0000 50%) 100% 100%/1.5em 1.5em no-repeat}
+.ph.uploading{cursor:wait}
+.ph.uploading::before{content:"Subiendo…";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000a;color:#e8d3a1;z-index:5}
 
 /* TEXTO */
-.cap{font:1.35em/1.2 Caveat,cursive;text-align:center;color:#f3eee3;padding:.2em 0 0;min-height:1.3em;outline:none}
+.cap{font:1.35em/1.2 Caveat,cursive;text-align:center;color:#f3eee3;padding:.25em 0 0;min-height:1.3em;outline:none}
 .cap:empty:before{content:attr(data-p);opacity:.35}
-.n{position:absolute;bottom:.4em;left:0;right:0;text-align:center;font:1.1em Caveat,cursive;opacity:.4}
 
 /* PORTADA */
 .cover{height:100%;background:linear-gradient(100deg,#3f121c 0,#6b2230 6%,#5a1c29 100%);border:.5em solid #4a1823;box-shadow:inset 0 0 0 .2em #d9b36c55;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2em;gap:.6em}
@@ -71,34 +54,29 @@ body{background:radial-gradient(circle at 50% 40%,#3b2a2e,#171012);color:#eee;fo
 .cover i{display:block;width:5em;height:.15em;background:#e0bd78;opacity:.7}
 [contenteditable]:focus{box-shadow:0 1px 0 #e0bd7899}
 
-/* BOTONES */
+/* BOTONES Y MENSAJES */
 .bar{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center}
 button{font:inherit;border:1px solid #e0bd7866;background:#2a1a1e;color:#e8d3a1;border-radius:999px;padding:8px 18px;cursor:pointer}
 button:disabled{opacity:.35;cursor:default}
 button:focus-visible,.ph:focus-visible{outline:3px solid #e0bd78;outline-offset:2px}
 .hint{font-size:.8em;opacity:.55;margin-top:8px;text-align:center;padding:0 10px}
-
-/* SUBIDA Y MENSAJES */
-.ph.uploading{cursor:wait;background:#33282d}
-.ph.uploading::after{content:"Subiendo…";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0009;color:#e8d3a1;z-index:5}
 .status{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#24171b;border:1px solid #e0bd7855;color:#e8d3a1;padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:9999;white-space:nowrap}
 .status.show{opacity:1}
 .status.error{border-color:#a85c67;color:#f0b8c0}
 
-/* CELULAR */
-@media (max-width:600px){
-  .book{--w:min(96vw,calc((100vh - 145px)/.68))}
-  .bar{margin-top:12px;gap:7px}
-  button{padding:7px 13px;font-size:14px}
-  .hint{font-size:11px;max-width:95vw}
-  .cover h1{font-size:2.6em}
-  .cover .s{font-size:1.5em}
-  .vertical-photo .ph{width:70%}
-  .pg{padding:1em 1.1em;gap:.6em}
-  .horizontal-title,.vertical-title{font-size:.9em}
-  .cap{font-size:1.15em}
-}
-@media (prefers-reduced-motion:reduce){.leaf,.wrap{transition:none}}
+/* CELULAR: una página a la vez (la clase "single" la pone el script) */
+.single .book{--pw:min(94vw,calc((100dvh - 150px)/1.36));width:var(--pw);height:calc(var(--pw)*1.36);font-size:calc(var(--pw)/24);perspective:1600px}
+.single .leaf{position:static;width:auto;height:auto;transform:none!important;transform-style:flat;transition:none}
+.single .face,.single .back{position:absolute;inset:0;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;border-radius:.6em;opacity:0;visibility:hidden;transition:transform .55s cubic-bezier(.5,.1,.3,1),opacity .45s ease,visibility 0s .55s}
+.single .face.past{transform:translateX(-35%) rotateY(-28deg)}
+.single .face.fut{transform:translateX(35%) rotateY(28deg)}
+.single .face.cur{opacity:1;visibility:visible;transition-delay:0s}
+.single .pg{box-shadow:none}
+.single .bar{margin-top:12px;gap:7px}
+.single button{padding:7px 13px;font-size:14px}
+.single .hint{font-size:11px;max-width:95vw}
+.status{max-width:92vw}
+@media (prefers-reduced-motion:reduce){.leaf,.wrap,.face{transition:none!important}}
 </style>
 </head>
 <body>
@@ -125,7 +103,9 @@ const $ = id => document.getElementById(id);
 const wrap = $('wrap'), file = $('file'), statusBox = $('status');
 const prev = $('prev'), next = $('next'), add = $('add');
 const leaves = [];
-let p = 0, target = null, nextSlotNumber = 1, statusTimer = null;
+let p = 0, k = 0, target = null, nextSlotNumber = 1, statusTimer = null;
+const mq = matchMedia('(max-width:700px)');
+let single = mq.matches;
 
 /* MENSAJES */
 function showStatus(message, error = false){
@@ -137,38 +117,26 @@ function showStatus(message, error = false){
 }
 
 /* ESPACIO PARA UNA FOTO */
-function slot(slotId, type){
-  const h = type === 'horizontal';
-  return `
-    <div class="slot ${h ? 'horizontal-block' : 'vertical-block'}" data-block="${type}">
-      <div class="photo-title">${h ? 'Momentos juntos' : 'Nuestros momentos'}</div>
-      <div class="pw">
-        <div class="ph empty" tabindex="0" data-slot="${slotId}" data-block="${type}" aria-label="Agregar foto">＋ Foto</div>
-        <i class="cr"></i>
-      </div>
-      <div class="cap" contenteditable spellcheck="false" data-p="Escribe un recuerdo"></div>
-    </div>`;
-}
+const slot = id => `
+  <div class="slot">
+    <div class="pw"><div class="fit">
+      <div class="ph empty" tabindex="0" data-slot="${id}" aria-label="Agregar foto">＋ Foto</div>
+    </div></div>
+    <div class="cap" contenteditable spellcheck="false" data-p="Escribe un recuerdo" data-for="${id}"></div>
+  </div>`;
 
 /* PÁGINA
-   Impares (1, 3, 5...) = 2 fotos horizontales
-   Pares   (2, 4, 6...) = 1 foto vertical */
+   Impares (1, 3, 5...) = 2 fotos una debajo de la otra
+   Pares   (2, 4, 6...) = 1 foto grande */
 function page(n){
-  if(n % 2 === 1){
-    const a = `foto-${nextSlotNumber++}`;
-    const b = `foto-${nextSlotNumber++}`;
-    return `
-      <div class="pg horizontal-page">
-        <div class="horizontal-title">Momentos juntos ❤️</div>
-        <div class="horizontal-photos">${slot(a, 'horizontal')}${slot(b, 'horizontal')}</div>
-        <span class="n">${n}</span>
-      </div>`;
-  }
-  const a = `foto-${nextSlotNumber++}`;
+  const count = n % 2 === 1 ? 2 : 1;
+  const title = count === 2 ? 'Momentos juntos ❤️' : 'Un momento especial ❤️';
+  let slots = '';
+  for(let i = 0; i < count; i++) slots += slot(`foto-${nextSlotNumber++}`);
   return `
-    <div class="pg vertical-page">
-      <div class="vertical-title">Un momento especial ❤️</div>
-      <div class="vertical-photo">${slot(a, 'vertical')}</div>
+    <div class="pg">
+      <div class="page-title">${title}</div>
+      <div class="photos">${slots}</div>
       <span class="n">${n}</span>
     </div>`;
 }
@@ -177,14 +145,13 @@ function page(n){
 const cover = `
   <div class="cover">
     <i></i>
-    <h1 contenteditable spellcheck="false">Nuestro álbum</h1>
-    <div class="s" contenteditable spellcheck="false">Para ti, con todo mi cariño</div>
+    <h1 contenteditable spellcheck="false" data-for="titulo">Nuestro álbum</h1>
+    <div class="s" contenteditable spellcheck="false" data-for="dedicatoria">Para ti, con todo mi cariño</div>
     <i></i>
   </div>`;
 
-/* HOJA (portada/frente + dorso)
-   Orden de lectura: dorso de la portada = página 1,
-   frente de la hoja 1 = página 2, dorso = página 3... */
+/* HOJA: frente + dorso.
+   Orden de lectura: portada, dorso de la portada (1), frente hoja 1 (2), dorso hoja 1 (3)... */
 function addLeaf(){
   const i = leaves.length;
   const l = document.createElement('div');
@@ -201,6 +168,8 @@ function addLeaf(){
     });
   });
 
+  l.querySelectorAll('[data-for]').forEach(bindText);
+
   wrap.appendChild(l);
   leaves.push(l);
   render(true);
@@ -209,6 +178,23 @@ function addLeaf(){
 /* RENDER */
 function render(now){
   const L = leaves.length;
+  document.body.classList.toggle('single', single);
+
+  if(single){
+    leaves.forEach((l, i) => {
+      [l.firstElementChild, l.lastElementChild].forEach((f, j) => {
+        const idx = 2 * i + j;
+        f.classList.toggle('cur', idx === k);
+        f.classList.toggle('past', idx < k);
+        f.classList.toggle('fut', idx > k);
+      });
+    });
+    wrap.style.transform = 'none';
+    prev.disabled = k === 0;
+    next.disabled = k === 2 * L - 1;
+    return;
+  }
+
   leaves.forEach((l, i) => {
     l.classList.toggle('flip', i < p);
     const z = i < p ? i : L - i;
@@ -220,14 +206,33 @@ function render(now){
   next.disabled = p === L;
 }
 
+/* CAMBIO ENTRE CELULAR Y PANTALLA GRANDE */
+mq.addEventListener('change', e => {
+  if(e.matches) k = Math.max(0, 2 * p - 1);
+  else p = Math.ceil(k / 2);
+  single = e.matches;
+  render(true);
+});
+
 /* NAVEGACIÓN */
 function go(d){
-  const n = Math.max(0, Math.min(leaves.length, p + d));
+  const L = leaves.length;
+  if(single){
+    const n = Math.max(0, Math.min(2 * L - 1, k + d));
+    if(n !== k){ k = n; render(false); }
+    return;
+  }
+  const n = Math.max(0, Math.min(L, p + d));
   if(n !== p){ p = n; render(false); }
 }
 prev.onclick = () => go(-1);
 next.onclick = () => go(1);
-add.onclick = () => { addLeaf(); p = leaves.length - 1; render(false); };
+add.onclick = () => {
+  addLeaf();
+  if(single) k = 2 * leaves.length - 2;
+  else p = leaves.length - 1;
+  render(false);
+};
 
 document.addEventListener('keydown', e => {
   if(e.target.isContentEditable) return;
@@ -243,6 +248,48 @@ document.addEventListener('pointerup', e => {
   x0 = null;
   if(Math.abs(d) > 70) go(d < 0 ? 1 : -1);
 });
+
+/* TEXTOS (leyendas, título y dedicatoria)
+   Se guardan solos 1.5 s después de dejar de escribir, o al tocar fuera. */
+const savedTexts = {};
+const textTimers = {};
+
+function bindText(el){
+  el.dataset.initial = el.textContent.trim();
+  el.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){ e.preventDefault(); el.blur(); }
+  });
+  el.addEventListener('input', () => {
+    clearTimeout(textTimers[el.dataset.for]);
+    textTimers[el.dataset.for] = setTimeout(() => saveText(el, false), 1500);
+  });
+  el.addEventListener('blur', () => {
+    clearTimeout(textTimers[el.dataset.for]);
+    saveText(el, true);
+  });
+}
+
+async function saveText(el, notify){
+  const key = el.dataset.for;
+  const text = el.textContent.trim();
+  const last = key in savedTexts ? savedTexts[key] : el.dataset.initial;
+  if(text === last) return;
+
+  try{
+    const response = await fetch(`${API_BASE}/api/texto`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'x-album-key': ALBUM_KEY },
+      body: JSON.stringify({ clave: key, texto: text })
+    });
+    const data = await response.json();
+    if(!response.ok || !data.success) throw new Error(data.message || 'Error al guardar.');
+    savedTexts[key] = text;
+    if(notify) showStatus('Texto guardado ❤️');
+  }catch(error){
+    console.error(error);
+    showStatus('No se pudo guardar el texto: ' + error.message, true);
+  }
+}
 
 /* SUBIR FOTO */
 async function uploadPhoto(f, photoSlot){
@@ -271,7 +318,7 @@ async function uploadPhoto(f, photoSlot){
     }
 
     const foto = data.foto;
-    mostrarFoto(photoSlot, foto.url, foto.orientacion, foto.width, foto.height);
+    mostrarFoto(photoSlot, foto.url, foto.width, foto.height);
     showStatus('Foto guardada ❤️');
   }catch(error){
     console.error(error);
@@ -282,19 +329,16 @@ async function uploadPhoto(f, photoSlot){
   }
 }
 
-/* MOSTRAR FOTO */
-function mostrarFoto(photoSlot, url, orientation, width, height){
+/* MOSTRAR FOTO
+   La foto llena todo el espacio: todos los marcos quedan del mismo tamaño. */
+function mostrarFoto(photoSlot, url, width, height){
   photoSlot.innerHTML = '';
-  photoSlot.classList.remove('horizontal', 'vertical', 'empty');
-
-  let o = orientation;
-  if(!o && width && height) o = width >= height ? 'horizontal' : 'vertical';
-  photoSlot.classList.add(o === 'vertical' ? 'vertical' : 'horizontal');
-
-  const img = document.createElement('img');
-  img.src = url;
+  photoSlot.classList.remove('empty');
+  photoSlot.classList.add('has');
+  const img = new Image();
   img.alt = 'Foto del álbum ❤️';
-  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.src = url;
   photoSlot.appendChild(img);
 }
 
@@ -305,8 +349,7 @@ file.onchange = async () => {
 };
 
 /* CARGAR ÁLBUM
-   Antes de colocar las fotos se crean todas las hojas necesarias,
-   para que las fotos de hojas agregadas no se pierdan al recargar. */
+   Primero se crean las hojas necesarias, luego se colocan las fotos. */
 async function loadAlbum(){
   try{
     showStatus('Cargando nuestro álbum…');
@@ -316,8 +359,9 @@ async function loadAlbum(){
 
     const data = await response.json();
     if(!data || !data.fotos) return;
+    const textos = data.textos || {};
 
-    const ids = Object.keys(data.fotos).map(id => {
+    const ids = [...Object.keys(data.fotos), ...Object.keys(textos)].map(id => {
       const m = id.match(/^foto-(\d+)$/);
       return m ? Number(m[1]) : 0;
     });
@@ -327,7 +371,12 @@ async function loadAlbum(){
 
     Object.entries(data.fotos).forEach(([slotId, foto]) => {
       const ph = document.querySelector(`.ph[data-slot="${slotId}"]`);
-      if(ph) mostrarFoto(ph, foto.url, foto.orientacion, foto.width, foto.height);
+      if(ph) mostrarFoto(ph, foto.url, foto.width, foto.height);
+    });
+
+    Object.entries(textos).forEach(([key, texto]) => {
+      const el = document.querySelector(`[data-for="${key}"]`);
+      if(el){ el.textContent = texto; savedTexts[key] = texto; }
     });
 
     showStatus('Álbum cargado ❤️');
@@ -337,7 +386,7 @@ async function loadAlbum(){
   }
 }
 
-/* INICIO: 4 hojas y carga de fotos */
+/* INICIO */
 for(let i = 0; i < 4; i++) addLeaf();
 loadAlbum();
 </script>
