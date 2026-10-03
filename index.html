@@ -4,861 +4,124 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nuestro álbum</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Caveat:wght@500&display=swap" rel="stylesheet">
-
 <style>
-:root{
-  box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px)
-}
-
-*{
-  box-sizing:border-box
-}
-
-html,
-body{
-  height:100%;
-  margin:0
-}
-
-body{
-  background:radial-gradient(circle at 50% 40%,#3b2a2e,#171012);
-  color:#eee;
-  font:15px Georgia,serif;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  touch-action:pan-y;
-  overscroll-behavior:none;
-}
-
-/* =========================================================
-   BLOQUEO DEL DOCUMENTO CUANDO EL POPUP ESTÁ ABIERTO
-   ========================================================= */
-
-html.lb-open,
-body.lb-open{
-  overflow:hidden !important;
-  overscroll-behavior:none !important;
-  touch-action:none !important;
-}
-
-/* =========================================================
-   LIBRO
-   ========================================================= */
-
-.book{
-  --w:min(94vw,920px,calc((100vh - 130px)/.68));
-  width:var(--w);
-  height:calc(var(--w)*.68);
-  font-size:calc(var(--w)/48);
-  perspective:2400px;
-  position:relative
-}
-
-.wrap{
-  position:absolute;
-  inset:0;
-  transition:transform .8s ease
-}
-
-.leaf{
-  position:absolute;
-  left:50%;
-  top:0;
-  width:50%;
-  height:100%;
-  transform-origin:left center;
-  transform-style:preserve-3d;
-  transition:transform .8s cubic-bezier(.5,.1,.3,1)
-}
-
-.leaf.flip{
-  transform:rotateY(-180deg)
-}
-
-.face{
-  position:absolute;
-  inset:0;
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-  overflow:hidden
-}
-
-.front{
-  border-radius:0 .6em .6em 0
-}
-
-.back{
-  transform:rotateY(180deg);
-  border-radius:.6em 0 0 .6em
-}
-
-/* =========================================================
-   PÁGINA
-   ========================================================= */
-
-.pg{
-  background:#1d1c20;
-  height:100%;
-  padding:1.25em 1.5em;
-  display:flex;
-  flex-direction:column;
-  gap:.6em;
-  position:relative;
-  overflow:hidden
-}
-
-.front .pg{
-  box-shadow:inset 1.6em 0 1.6em -1em #000a
-}
-
-.back .pg{
-  box-shadow:inset -1.6em 0 1.6em -1em #000a
-}
-
-.page-title{
-  font:1em Caveat,cursive;
-  color:#e0bd78;
-  text-align:center;
-  opacity:.65;
-  min-height:1.1em
-}
-
-.photos{
-  flex:1;
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-  gap:.7em
-}
-
-.n{
-  position:absolute;
-  bottom:.4em;
-  left:0;
-  right:0;
-  text-align:center;
-  font:1.1em Caveat,cursive;
-  opacity:.4
-}
-
-/* =========================================================
-   ESPACIO DE FOTO
-   ========================================================= */
-
-.slot{
-  flex:1;
-  min-height:0;
-  display:flex;
-  flex-direction:column
-}
-
-.pw{
-  flex:1;
-  min-height:0;
-  position:relative
-}
-
-.fit{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center
-}
-
-.ph{
-  position:relative;
-  width:100%;
-  height:100%;
-  background:#2c2b31;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  color:#8d8a99;
-  cursor:pointer;
-  overflow:hidden;
-  font-size:.95em;
-  border-radius:.15em;
-  transition:background .2s ease
-}
-
-.ph:hover{
-  background:#35343b
-}
-
-.ph.has{
-  background:#171519
-}
-
-.ph img{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block
-}
-
-/* =========================================================
-   ESQUINEROS
-   ========================================================= */
-
-.ph::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  --c:#f3eee3;
-  filter:drop-shadow(0 0 .12em #000b);
-  background:
-    linear-gradient(135deg,var(--c) 50%,#0000 50%) 0 0/1.5em 1.5em no-repeat,
-    linear-gradient(225deg,var(--c) 50%,#0000 50%) 100% 0/1.5em 1.5em no-repeat,
-    linear-gradient(45deg,var(--c) 50%,#0000 50%) 0 100%/1.5em 1.5em no-repeat,
-    linear-gradient(315deg,var(--c) 50%,#0000 50%) 100% 100%/1.5em 1.5em no-repeat
-}
-
-.ph.uploading{
-  cursor:wait
-}
-
-.ph.uploading::before{
-  content:"Subiendo…";
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#000a;
-  color:#e8d3a1;
-  z-index:5
-}
-
-/* =========================================================
-   TEXTO
-   ========================================================= */
-
-.cap{
-  font:1.35em/1.2 Caveat,cursive;
-  text-align:center;
-  color:#f3eee3;
-  padding:.25em 0 0;
-  min-height:1.3em;
-  outline:none
-}
-
-.editing .cap:empty:before{
-  content:attr(data-p);
-  opacity:.35
-}
-
-/* =========================================================
-   PORTADA
-   ========================================================= */
-
-.cover{
-  height:100%;
-  background:linear-gradient(100deg,#3f121c 0,#6b2230 6%,#5a1c29 100%);
-  border:.5em solid #4a1823;
-  box-shadow:inset 0 0 0 .2em #d9b36c55;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:2em;
-  gap:.6em
-}
-
-.cover h1{
-  font:600 3.2em/1.1 Fraunces,Georgia,serif;
-  color:#e0bd78;
-  margin:0;
-  outline:none;
-  text-shadow:0 1px 0 #0006
-}
-
-.cover .s{
-  font:1.8em Caveat,cursive;
-  color:#e0bd78cc;
-  outline:none
-}
-
-.cover i{
-  display:block;
-  width:5em;
-  height:.15em;
-  background:#e0bd78;
-  opacity:.7
-}
-
-[contenteditable]:focus{
-  box-shadow:0 1px 0 #e0bd7899
-}
-
-/* =========================================================
-   BOTONES
-   ========================================================= */
-
-.bar{
-  display:flex;
-  gap:10px;
-  margin-top:18px;
-  flex-wrap:wrap;
-  justify-content:center
-}
-
-button{
-  font:inherit;
-  border:1px solid #e0bd7866;
-  background:#2a1a1e;
-  color:#e8d3a1;
-  border-radius:999px;
-  padding:8px 18px;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-}
-
-button:disabled{
-  opacity:.35;
-  cursor:default
-}
-
-button:focus-visible,
-.ph:focus-visible{
-  outline:3px solid #e0bd78;
-  outline-offset:2px
-}
-
-.hint{
-  font-size:.8em;
-  opacity:.55;
-  margin-top:8px;
-  text-align:center;
-  padding:0 10px
-}
-
-.status{
-  position:fixed;
-  left:50%;
-  bottom:18px;
-  transform:translateX(-50%);
-  background:#24171b;
-  border:1px solid #e0bd7855;
-  color:#e8d3a1;
-  padding:9px 16px;
-  border-radius:999px;
-  font-size:13px;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .25s ease;
-  z-index:9999;
-  white-space:nowrap
-}
-
-.status.show{
-  opacity:1
-}
-
-.status.error{
-  border-color:#a85c67;
-  color:#f0b8c0
-}
-
-/* =========================================================
-   MODOS
-   ========================================================= */
-
-.ph{
-  cursor:default
-}
-
-.ph.has{
-  cursor:zoom-in
-}
-
-.ph.empty{
-  color:transparent
-}
-
-.editing .ph{
-  cursor:pointer
-}
-
-.editing .ph.empty{
-  color:#8d8a99
-}
-
-#add{
-  display:none
-}
-
-.editing #add{
-  display:inline-block
-}
-
-.hint .e{
-  display:none
-}
-
-.editing .hint .e{
-  display:inline
-}
-
-.editing .hint .v{
-  display:none
-}
-
-.badge{
-  display:none;
-  position:absolute;
-  left:50%;
-  bottom:.6em;
-  transform:translateX(-50%);
-  z-index:3;
-  font:600 .75em Georgia,serif;
-  background:#000b;
-  color:#e8d3a1;
-  padding:.35em .9em;
-  border-radius:999px;
-  pointer-events:none;
-  white-space:nowrap
-}
-
-.editing .badge{
-  display:block
-}
-
-/* =========================================================
-   FECHA / CARTA
-   ========================================================= */
-
-.date{
-  text-align:center
-}
-
-.dtext{
-  font:1em Caveat,cursive;
-  color:#e0bd78;
-  opacity:.85
-}
-
-.dtext:empty{
-  display:none
-}
-
-.date input{
-  display:none;
-  font:inherit;
-  font-size:.85em;
-  color:#e8d3a1;
-  background:transparent;
-  border:1px solid #e0bd7844;
-  border-radius:.4em;
-  padding:.1em .4em;
-  margin-top:.2em;
-  color-scheme:dark
-}
-
-.editing .date input{
-  display:inline-block
-}
-
-.editing .dtext{
-  display:none
-}
-
-.del{
-  display:none;
-  position:absolute;
-  top:.5em;
-  right:.5em;
-  z-index:4;
-  width:2em;
-  height:2em;
-  padding:0;
-  border-radius:50%;
-  background:#000b;
-  border-color:#fff4;
-  color:#fff;
-  font-size:.85em;
-  line-height:1
-}
-
-.editing .del{
-  display:block
-}
-
-.letter{
-  flex:1;
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-  background:#f3eee3;
-  color:#3b2a2e;
-  border-radius:.3em;
-  padding:1.4em 1.5em;
-  box-shadow:0 .3em 1em #0008
-}
-
-.letter-to{
-  font:600 1.7em Fraunces,Georgia,serif;
-  color:#6b2230;
-  margin-bottom:.4em
-}
-
-.letter-body{
-  flex:1;
-  min-height:0;
-  overflow:auto;
-  white-space:pre-wrap;
-  font:1.5em/1.35 Caveat,cursive;
-  outline:none
-}
-
-.editing .letter-body:empty:before{
-  content:attr(data-p);
-  opacity:.4
-}
-
-.letter-body[contenteditable="true"]:focus,
-.letter-body[contenteditable="plaintext-only"]:focus{
-  box-shadow:none
-}
-
-.cover .days{
-  font:600 1.05em Georgia,serif;
-  color:#e0bd78;
-  letter-spacing:.08em;
-  opacity:.9;
-  margin-top:.5em
-}
-
-/* =========================================================
-   POPUP DE FOTO
-   FIX DEFINITIVO PARA SAMSUNG / ANDROID
-   ========================================================= */
-
-.lb{
-  position:fixed;
-
-  /*
-     No usamos solamente inset:0.
-     Definimos explícitamente el área para evitar
-     problemas de viewport en Chrome/Samsung.
-  */
-  left:0;
-  top:0;
-  width:100%;
-  height:100vh;
-  height:100svh;
-
-  z-index:9000;
-
-  background:#0c0709e6;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  padding:
-    max(16px,env(safe-area-inset-top,0px))
-    max(16px,env(safe-area-inset-right,0px))
-    max(16px,env(safe-area-inset-bottom,0px))
-    max(16px,env(safe-area-inset-left,0px));
-
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-
-  transition:
-    opacity .25s ease,
-    visibility 0s linear .25s;
-
-  overflow:hidden;
-
-  overscroll-behavior:none;
-  touch-action:none;
-
-  isolation:isolate;
-
-  /*
-     Ayuda a Chrome Android a mantener
-     el popup en su propia capa.
-  */
-  transform:translateZ(0);
-  -webkit-transform:translateZ(0);
-
-  -webkit-tap-highlight-color:transparent;
-}
-
-.lb.on{
-  opacity:1;
-  visibility:visible;
-  pointer-events:auto;
-
-  transition:
-    opacity .25s ease,
-    visibility 0s linear 0s;
-}
-
-/*
-   En navegadores que soportan dynamic viewport,
-   mantenemos la altura dinámica solamente cuando
-   el navegador realmente lo necesita.
-*/
-@supports (height:100dvh){
-  .lb{
-    height:100svh;
-    min-height:100svh;
-  }
-}
-
-/* =========================================================
-   CONTENEDOR DE FOTO DEL POPUP
-   ========================================================= */
-
-.lb figure{
-  margin:0;
-
-  width:100%;
-  height:100%;
-
-  max-width:100%;
-  max-height:100%;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-
-  gap:.5em;
-
-  overflow:hidden;
-
-  transform:scale(.94);
-  transform-origin:center center;
-
-  transition:
-    transform .3s cubic-bezier(.2,.8,.2,1);
-
-  pointer-events:auto;
-}
-
-.lb.on figure{
-  transform:scale(1);
-}
-
-/* =========================================================
-   IMAGEN DEL POPUP
-   ========================================================= */
-
-.lb img{
-  display:block;
-
-  width:auto;
-  height:auto;
-
-  max-width:calc(100vw - 32px);
-  max-height:calc(100vh - 150px);
-
-  object-fit:contain;
-
-  border:8px solid #f3eee3;
-  border-radius:3px;
-
-  box-shadow:0 20px 60px #000a;
-
-  background:#171519;
-
-  user-select:none;
-  -webkit-user-select:none;
-
-  -webkit-user-drag:none;
-  user-drag:none;
-
-  touch-action:none;
-
-  /*
-     Evita selección o arrastre accidental
-     de la imagen en Android.
-  */
-  pointer-events:auto;
-}
-
-/*
-   En móvil usamos small viewport para evitar
-   que el popup cambie de tamaño cuando aparece
-   o desaparece la barra del navegador.
-*/
-@media screen and (max-width:700px){
-
-  .lb{
-    width:100%;
-    height:100svh;
-    min-height:100svh;
-
-    padding:
-      max(12px,env(safe-area-inset-top,0px))
-      max(12px,env(safe-area-inset-right,0px))
-      max(12px,env(safe-area-inset-bottom,0px))
-      max(12px,env(safe-area-inset-left,0px));
-  }
-
-  .lb figure{
-    width:100%;
-    height:100%;
-    max-width:100%;
-    max-height:100%;
-
-    gap:8px;
-  }
-
-  .lb img{
-    max-width:calc(100vw - 24px);
-    max-height:calc(100svh - 110px);
-
-    border-width:6px;
-  }
-
-  .lb figcaption{
-    font-size:1.4em;
-    line-height:1.1;
-
-    width:100%;
-    max-width:calc(100vw - 30px);
-
-    padding:0 8px;
-
-    flex:0 0 auto;
-  }
-
-  .lb-x{
-    top:max(12px,env(safe-area-inset-top,0px));
-    right:max(12px,env(safe-area-inset-right,0px));
-
-    width:42px;
-    height:42px;
-
-    z-index:10;
-  }
-}
-
-/* =========================================================
-   CELULAR: UNA PÁGINA
-   ========================================================= */
-
-.single .book{
-  --pw:min(94vw,calc((100dvh - 150px)/1.36));
-
-  width:var(--pw);
-  height:calc(var(--pw)*1.36);
-
-  font-size:calc(var(--pw)/24);
-
-  perspective:1600px
-}
-
-.single .leaf{
-  position:static;
-  width:auto;
-  height:auto;
-
-  transform:none!important;
-
-  transform-style:flat;
-
-  transition:none
-}
-
-.single .face,
-.single .back{
-  position:absolute;
-  inset:0;
-
-  transform:none;
-
-  backface-visibility:visible;
-  -webkit-backface-visibility:visible;
-
-  border-radius:.6em;
-
-  opacity:0;
-  visibility:hidden;
-
-  transition:
-    transform .55s cubic-bezier(.5,.1,.3,1),
-    opacity .45s ease,
-    visibility 0s .55s
-}
-
-.single .face.past{
-  transform:translateX(-35%) rotateY(-28deg)
-}
-
-.single .face.fut{
-  transform:translateX(35%) rotateY(28deg)
-}
-
-.single .face.cur{
-  opacity:1;
-  visibility:visible;
-
-  transition-delay:0s
-}
-
-.single .pg{
-  box-shadow:none
-}
-
-.single .bar{
-  margin-top:12px;
-  gap:7px
-}
-
-.single button{
-  padding:7px 13px;
-  font-size:14px
-}
-
-.single .hint{
-  font-size:11px;
-  max-width:95vw
-}
-
-.status{
-  max-width:92vw
-}
-
-/* =========================================================
-   REDUCIR ANIMACIONES
-   ========================================================= */
-
-@media (prefers-reduced-motion:reduce){
-
-  .lb,
-  .lb figure,
-  .leaf,
-  .wrap,
-  .face{
-    transition:none!important
-  }
-}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(circle at 50% 40%,#3b2a2e,#171012);color:#eee;font:15px Georgia,serif;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;touch-action:pan-y}
+
+/* LIBRO (dos páginas) */
+.book{--w:min(94vw,920px,calc((100vh - 130px)/.68));width:var(--w);height:calc(var(--w)*.68);font-size:calc(var(--w)/48);perspective:2400px;position:relative}
+.wrap{position:absolute;inset:0;transition:transform .8s ease}
+.leaf{position:absolute;left:50%;top:0;width:50%;height:100%;transform-origin:left center;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.5,.1,.3,1)}
+.leaf.flip{transform:rotateY(-180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.front{border-radius:0 .6em .6em 0}
+.back{transform:rotateY(180deg);border-radius:.6em 0 0 .6em}
+
+/* PÁGINA */
+.pg{background:#1d1c20;height:100%;padding:1.25em 1.5em;display:flex;flex-direction:column;gap:.6em;position:relative;overflow:hidden}
+.front .pg{box-shadow:inset 1.6em 0 1.6em -1em #000a}
+.back .pg{box-shadow:inset -1.6em 0 1.6em -1em #000a}
+.page-title{font:1em Caveat,cursive;color:#e0bd78;text-align:center;opacity:.65;min-height:1.1em}
+.photos{flex:1;min-height:0;display:flex;flex-direction:column;gap:.7em}
+.n{position:absolute;bottom:.4em;left:0;right:0;text-align:center;font:1.1em Caveat,cursive;opacity:.4}
+
+/* ESPACIO DE FOTO
+   .pw = zona disponible. .fit = contenedor medible.
+   .ph = marco: siempre del tamaño del espacio, con o sin foto. */
+.slot{flex:1;min-height:0;display:flex;flex-direction:column}
+.pw{flex:1;min-height:0;position:relative}
+.fit{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.ph{position:relative;width:100%;height:100%;background:#2c2b31;display:flex;align-items:center;justify-content:center;text-align:center;color:#8d8a99;cursor:pointer;overflow:hidden;font-size:.95em;border-radius:.15em;transition:background .2s ease}
+.ph:hover{background:#35343b}
+.ph.has{background:#171519}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* esquineros sobre el marco */
+.ph::after{content:"";position:absolute;inset:0;pointer-events:none;--c:#f3eee3;filter:drop-shadow(0 0 .12em #000b);background:linear-gradient(135deg,var(--c) 50%,#0000 50%) 0 0/1.5em 1.5em no-repeat,linear-gradient(225deg,var(--c) 50%,#0000 50%) 100% 0/1.5em 1.5em no-repeat,linear-gradient(45deg,var(--c) 50%,#0000 50%) 0 100%/1.5em 1.5em no-repeat,linear-gradient(315deg,var(--c) 50%,#0000 50%) 100% 100%/1.5em 1.5em no-repeat}
+.ph.uploading{cursor:wait}
+.ph.uploading::before{content:"Subiendo…";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000a;color:#e8d3a1;z-index:5}
+
+/* TEXTO */
+.cap{font:1.35em/1.2 Caveat,cursive;text-align:center;color:#f3eee3;padding:.25em 0 0;min-height:1.3em;outline:none}
+.editing .cap:empty:before{content:attr(data-p);opacity:.35}
+
+/* PORTADA */
+.cover{height:100%;background:linear-gradient(100deg,#3f121c 0,#6b2230 6%,#5a1c29 100%);border:.5em solid #4a1823;box-shadow:inset 0 0 0 .2em #d9b36c55;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2em;gap:.6em}
+.cover h1{font:600 3.2em/1.1 Fraunces,Georgia,serif;color:#e0bd78;margin:0;outline:none;text-shadow:0 1px 0 #0006}
+.cover .s{font:1.8em Caveat,cursive;color:#e0bd78cc;outline:none}
+.cover i{display:block;width:5em;height:.15em;background:#e0bd78;opacity:.7}
+[contenteditable]:focus{box-shadow:0 1px 0 #e0bd7899}
+
+/* BOTONES Y MENSAJES */
+.bar{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;border:1px solid #e0bd7866;background:#2a1a1e;color:#e8d3a1;border-radius:999px;padding:8px 18px;cursor:pointer}
+button:disabled{opacity:.35;cursor:default}
+button:focus-visible,.ph:focus-visible{outline:3px solid #e0bd78;outline-offset:2px}
+.hint{font-size:.8em;opacity:.55;margin-top:8px;text-align:center;padding:0 10px}
+.status{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#24171b;border:1px solid #e0bd7855;color:#e8d3a1;padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:9999;white-space:nowrap}
+.status.show{opacity:1}
+.status.error{border-color:#a85c67;color:#f0b8c0}
+
+/* MODOS: ver / editar */
+.ph{cursor:default}
+.ph.has{cursor:zoom-in}
+.ph.empty{color:transparent}
+.editing .ph{cursor:pointer}
+.editing .ph.empty{color:#8d8a99}
+#add{display:none}
+.editing #add{display:inline-block}
+.hint .e{display:none}
+.editing .hint .e{display:inline}
+.editing .hint .v{display:none}
+.badge{display:none;position:absolute;left:50%;bottom:.6em;transform:translateX(-50%);z-index:3;font:600 .75em Georgia,serif;background:#000b;color:#e8d3a1;padding:.35em .9em;border-radius:999px;pointer-events:none;white-space:nowrap}
+.editing .badge{display:block}
+
+/* FECHA, QUITAR FOTO, CARTA, CONTADOR */
+.date{text-align:center}
+.dtext{font:1em Caveat,cursive;color:#e0bd78;opacity:.85}
+.dtext:empty{display:none}
+.date input{display:none;font:inherit;font-size:.85em;color:#e8d3a1;background:transparent;border:1px solid #e0bd7844;border-radius:.4em;padding:.1em .4em;margin-top:.2em;color-scheme:dark}
+.editing .date input{display:inline-block}
+.editing .dtext{display:none}
+.del{display:none;position:absolute;top:.5em;right:.5em;z-index:4;width:2em;height:2em;padding:0;border-radius:50%;background:#000b;border-color:#fff4;color:#fff;font-size:.85em;line-height:1}
+.editing .del{display:block}
+.letter{flex:1;min-height:0;display:flex;flex-direction:column;background:#f3eee3;color:#3b2a2e;border-radius:.3em;padding:1.4em 1.5em;box-shadow:0 .3em 1em #0008}
+.letter-to{font:600 1.7em Fraunces,Georgia,serif;color:#6b2230;margin-bottom:.4em}
+.letter-body{flex:1;min-height:0;overflow:auto;white-space:pre-wrap;font:1.5em/1.35 Caveat,cursive;outline:none}
+.editing .letter-body:empty:before{content:attr(data-p);opacity:.4}
+.letter-body[contenteditable="true"]:focus,.letter-body[contenteditable="plaintext-only"]:focus{box-shadow:none}
+.cover .days{font:600 1.05em Georgia,serif;color:#e0bd78;letter-spacing:.08em;opacity:.9;margin-top:.5em}
+
+/* POPUP DE FOTO */
+.lb{position:fixed;inset:0;z-index:9000;background:#0c0709e6;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s .25s}
+.lb.on{opacity:1;visibility:visible;transition-delay:0s}
+.lb figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:.5em;max-width:100%;transform:scale(.92);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.lb.on figure{transform:none}
+.lb img{max-width:min(96vw,1100px);max-height:calc(100dvh - 130px);object-fit:contain;border:8px solid #f3eee3;border-radius:3px;box-shadow:0 20px 60px #000a;background:#171519}
+.lb figcaption{font:1.6em Caveat,cursive;color:#f3eee3;text-align:center;min-height:1.2em;max-width:min(96vw,700px)}
+.lb-x{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:42px;height:42px;padding:0;border-radius:50%;font-size:18px}
+@media (prefers-reduced-motion:reduce){.lb,.lb figure{transition:none}}
+
+/* CELULAR: una página a la vez (la clase "single" la pone el script) */
+.single .book{--pw:min(94vw,calc((100dvh - 150px)/1.36));width:var(--pw);height:calc(var(--pw)*1.36);font-size:calc(var(--pw)/24);perspective:1600px}
+.single .leaf{position:static;width:auto;height:auto;transform:none!important;transform-style:flat;transition:none}
+.single .face,.single .back{position:absolute;inset:0;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;border-radius:.6em;opacity:0;visibility:hidden;transition:transform .55s cubic-bezier(.5,.1,.3,1),opacity .45s ease,visibility 0s .55s}
+.single .face.past{transform:translateX(-35%) rotateY(-28deg)}
+.single .face.fut{transform:translateX(35%) rotateY(28deg)}
+.single .face.cur{opacity:1;visibility:visible;transition-delay:0s}
+.single .pg{box-shadow:none}
+.single .bar{margin-top:12px;gap:7px}
+.single button{padding:7px 13px;font-size:14px}
+.single .hint{font-size:11px;max-width:95vw}
+.status{max-width:92vw}
+@media (prefers-reduced-motion:reduce){.leaf,.wrap,.face{transition:none!important}}
 </style>
 </head>
-
 <body>
 
-<div class="book">
-  <div class="wrap" id="wrap"></div>
-</div>
+<div class="book"><div class="wrap" id="wrap"></div></div>
 
 <div class="bar">
   <button id="prev">Anterior</button>
@@ -867,62 +130,20 @@ button:focus-visible,
   <button id="add">Agregar hoja</button>
 </div>
 
-<div class="hint">
-  <span class="v">
-    Toca una foto para verla en grande.
-  </span>
-
-  <span class="e">
-    Modo edición: toca un recuadro para poner o cambiar una foto, ✕ para quitarla,
-    y toca las letras o la fecha para escribir. Al terminar, toca Guardar.
-  </span>
+<div class="hint"><span class="v">Toca una foto para verla en grande. Desliza o usa las flechas para pasar las hojas.</span><span class="e">Modo edición: toca un recuadro para poner o cambiar una foto, ✕ para quitarla, y toca las letras o la fecha para escribir. Al terminar, toca Guardar.</span></div>
+<div id="lb" class="lb" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+  <button class="lb-x" aria-label="Cerrar">✕</button>
+  <figure><img alt=""><figcaption></figcaption></figure>
 </div>
-
-<!-- =========================================================
-     POPUP
-     ========================================================= -->
-
-<div
-  id="lb"
-  class="lb"
-  role="dialog"
-  aria-modal="true"
-  aria-label="Foto ampliada"
-  aria-hidden="true"
->
-  <button
-    class="lb-x"
-    type="button"
-    aria-label="Cerrar"
-  >
-    ✕
-  </button>
-
-  <figure>
-    <img alt="">
-    <figcaption></figcaption>
-  </figure>
-</div>
-
 <div id="status" class="status"></div>
-
-<input
-  id="file"
-  type="file"
-  accept="image/jpeg,image/png,image/webp,image/*"
-  hidden
->
+<input id="file" type="file" accept="image/jpeg,image/png,image/webp,image/*" hidden>
 
 <script>
-
-/* =========================================================
-   CONFIGURACIÓN
-   ========================================================= */
-
+/* CONFIGURACIÓN */
 const API_BASE = 'https://nuestro-album-api.onrender.com';
-
 const ALBUM_KEY = 'ChrisYess2026Fotos';
 
+/* Fecha en que empezaron (año, mes, día). OJO: el mes cuenta desde 0, así que mayo = 4 */
 const START_DATE = new Date(2026, 4, 20);
 
 const DEFAULT_LETTER = `Mi amor,
@@ -933,1885 +154,459 @@ Gracias por estar, por reír conmigo y por hacer que hasta los días comunes se 
 
 Te quiero muchísimo.`;
 
-
-/* =========================================================
-   ELEMENTOS Y ESTADO
-   ========================================================= */
-
+/* ELEMENTOS Y ESTADO */
 const $ = id => document.getElementById(id);
-
-const wrap = $('wrap');
-const file = $('file');
-const statusBox = $('status');
-
-const prev = $('prev');
-const next = $('next');
-const add = $('add');
-
+const wrap = $('wrap'), file = $('file'), statusBox = $('status');
+const prev = $('prev'), next = $('next'), add = $('add');
 const leaves = [];
-
-let p = 0;
-let k = 0;
-
-let target = null;
-let nextSlotNumber = 1;
-let statusTimer = null;
-
-let editing = false;
-let pendingUploads = 0;
-
+let p = 0, k = 0, target = null, nextSlotNumber = 1, statusTimer = null;
+let editing = false, pendingUploads = 0;
 const mq = matchMedia('(max-width:700px)');
-
 let single = mq.matches;
 
-
-/* =========================================================
-   MENSAJES
-   ========================================================= */
-
+/* MENSAJES */
 function showStatus(message, error = false){
-
   clearTimeout(statusTimer);
-
   statusBox.textContent = message;
-
   statusBox.classList.toggle('error', error);
-
   statusBox.classList.add('show');
-
-  statusTimer = setTimeout(() => {
-    statusBox.classList.remove('show');
-  }, 3000);
-
+  statusTimer = setTimeout(() => statusBox.classList.remove('show'), 3000);
 }
 
-
-/* =========================================================
-   ESPACIO PARA UNA FOTO
-   ========================================================= */
-
+/* ESPACIO PARA UNA FOTO */
 const slot = id => `
   <div class="slot">
+    <div class="pw"><div class="fit">
+      <div class="ph empty" tabindex="0" data-slot="${id}" aria-label="Agregar foto">＋ Foto</div>
+    </div></div>
+    <div class="cap" spellcheck="false" data-p="Escribe un recuerdo" data-for="${id}"></div>
+    <div class="date"><span class="dtext"></span><input type="date" data-for="fecha-${id}" aria-label="Fecha de la foto"></div>
+  </div>`;
 
-    <div class="pw">
-
-      <div class="fit">
-
-        <div
-          class="ph empty"
-          tabindex="0"
-          data-slot="${id}"
-          aria-label="Agregar foto"
-        >
-          ＋ Foto
-        </div>
-
-      </div>
-
-    </div>
-
-    <div
-      class="cap"
-      spellcheck="false"
-      data-p="Escribe un recuerdo"
-      data-for="${id}"
-    ></div>
-
-    <div class="date">
-
-      <span class="dtext"></span>
-
-      <input
-        type="date"
-        data-for="fecha-${id}"
-        aria-label="Fecha de la foto"
-      >
-
-    </div>
-
-  </div>
-`;
-
-
-/* =========================================================
-   PÁGINA
-   ========================================================= */
-
+/* PÁGINA
+   Impares (1, 3, 5...) = 2 fotos una debajo de la otra
+   Pares   (2, 4, 6...) = 1 foto grande */
 function page(n){
-
   const count = n % 2 === 1 ? 2 : 1;
-
-  const title =
-    count === 2
-      ? 'Momentos juntos ❤️'
-      : 'Un momento especial ❤️';
-
+  const title = count === 2 ? 'Momentos juntos ❤️' : 'Un momento especial ❤️';
   let slots = '';
-
-  for(let i = 0; i < count; i++){
-    slots += slot(`foto-${nextSlotNumber++}`);
-  }
-
+  for(let i = 0; i < count; i++) slots += slot(`foto-${nextSlotNumber++}`);
   return `
     <div class="pg">
-
-      <div class="page-title">
-        ${title}
-      </div>
-
-      <div class="photos">
-        ${slots}
-      </div>
-
-      <span class="n">
-        ${n}
-      </span>
-
-    </div>
-  `;
+      <div class="page-title">${title}</div>
+      <div class="photos">${slots}</div>
+      <span class="n">${n}</span>
+    </div>`;
 }
 
-
-/* =========================================================
-   PORTADA
-   ========================================================= */
-
+/* PORTADA */
 const cover = `
   <div class="cover">
-
     <i></i>
-
-    <h1
-      spellcheck="false"
-      data-for="titulo"
-    >
-      Nuestro álbum
-    </h1>
-
-    <div
-      class="s"
-      spellcheck="false"
-      data-for="dedicatoria"
-    >
-      Para ti, con todo mi cariño
-    </div>
-
+    <h1 spellcheck="false" data-for="titulo">Nuestro álbum</h1>
+    <div class="s" spellcheck="false" data-for="dedicatoria">Para ti, con todo mi cariño</div>
     <div class="days"></div>
-
     <i></i>
+  </div>`;
 
-  </div>
-`;
-
-
-/* =========================================================
-   CARTA
-   ========================================================= */
-
+/* CARTA (dorso de la portada) */
 const letterPage = `
   <div class="pg">
-
     <div class="letter">
-
-      <div class="letter-to">
-        Para ti
-      </div>
-
-      <div
-        class="letter-body"
-        spellcheck="false"
-        data-for="carta"
-        data-multi
-        data-p="Escribe aquí tu carta…"
-      ></div>
-
+      <div class="letter-to">Para ti</div>
+      <div class="letter-body" spellcheck="false" data-for="carta" data-multi data-p="Escribe aquí tu carta…"></div>
     </div>
-
-  </div>
-`;
-
-
-/* =========================================================
-   CONTADOR
-   ========================================================= */
+  </div>`;
 
 function daysText(){
-
   const t = new Date();
-
-  const today =
-    new Date(
-      t.getFullYear(),
-      t.getMonth(),
-      t.getDate()
-    );
-
-  const d =
-    Math.round(
-      (today - START_DATE) / 86400000
-    );
-
-  if(d < 0){
-
-    return `Faltan ${-d} ${
-      -d === 1 ? 'día' : 'días'
-    } para nuestro día`;
-
-  }
-
-  if(d === 0){
-
-    return 'Hoy empieza nuestra historia';
-
-  }
-
-  return `Llevamos ${d} ${
-    d === 1 ? 'día' : 'días'
-  } juntos`;
-
+  const today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+  const d = Math.round((today - START_DATE) / 86400000);
+  if(d < 0) return `Faltan ${-d} ${-d === 1 ? 'día' : 'días'} para nuestro día`;
+  if(d === 0) return 'Hoy empieza nuestra historia';
+  return `Llevamos ${d} ${d === 1 ? 'día' : 'días'} juntos`;
 }
 
-
-/* =========================================================
-   AGREGAR HOJA
-   ========================================================= */
-
+/* HOJA: frente + dorso.
+   Orden de lectura: portada, dorso de la portada (1), frente hoja 1 (2), dorso hoja 1 (3)... */
 function addLeaf(){
-
   const i = leaves.length;
-
   const l = document.createElement('div');
-
   l.className = 'leaf';
-
   l.innerHTML = `
-    <div class="face front">
-      ${i ? page(2 * i - 1) : cover}
-    </div>
-
-    <div class="face back">
-      ${i ? page(2 * i) : letterPage}
-    </div>
-  `;
-
-  const letter =
-    l.querySelector('.letter-body');
-
-  if(letter){
-    letter.textContent = DEFAULT_LETTER;
-  }
-
-
-  /* Eventos de fotos */
+    <div class="face front">${i ? page(2 * i - 1) : cover}</div>
+    <div class="face back">${i ? page(2 * i) : letterPage}</div>`;
+  const letter = l.querySelector('.letter-body');
+  if(letter) letter.textContent = DEFAULT_LETTER;
 
   l.querySelectorAll('.ph').forEach(ph => {
-
     const open = () => {
-
-      if(editing){
-
-        target = ph;
-
-        file.value = '';
-
-        file.click();
-
-      }else if(ph.classList.contains('has')){
-
-        openLightbox(ph);
-
-      }
-
+      if(editing){ target = ph; file.value = ''; file.click(); }
+      else if(ph.classList.contains('has')) openLightbox(ph);
     };
-
-
     ph.addEventListener('click', open);
-
-
     ph.addEventListener('keydown', e => {
-
       if(e.target !== ph) return;
-
-      if(
-        e.key === 'Enter' ||
-        e.key === ' '
-      ){
-
-        e.preventDefault();
-
-        open();
-
-      }
-
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); }
     });
-
   });
 
+  l.querySelectorAll('[data-for]').forEach(el => { bindText(el); applyEditable(el, editing); });
 
-  /* Textos */
-
-  l.querySelectorAll('[data-for]').forEach(el => {
-
-    bindText(el);
-
-    applyEditable(el, editing);
-
-  });
-
-
-  /* Contador */
-
-  const dz =
-    l.querySelector('.days');
-
-  if(dz){
-    dz.textContent = daysText();
-  }
-
+  const dz = l.querySelector('.days');
+  if(dz) dz.textContent = daysText();
 
   wrap.appendChild(l);
-
   leaves.push(l);
-
   render(true);
-
 }
 
-
-/* =========================================================
-   RENDER
-   ========================================================= */
-
+/* RENDER */
 function render(now){
-
   const L = leaves.length;
-
-  document.body.classList.toggle(
-    'single',
-    single
-  );
-
-
-  /* CELULAR */
+  document.body.classList.toggle('single', single);
 
   if(single){
-
     leaves.forEach((l, i) => {
-
-      [
-        l.firstElementChild,
-        l.lastElementChild
-      ].forEach((f, j) => {
-
-        const idx =
-          2 * i + j;
-
-        f.classList.toggle(
-          'cur',
-          idx === k
-        );
-
-        f.classList.toggle(
-          'past',
-          idx < k
-        );
-
-        f.classList.toggle(
-          'fut',
-          idx > k
-        );
-
+      [l.firstElementChild, l.lastElementChild].forEach((f, j) => {
+        const idx = 2 * i + j;
+        f.classList.toggle('cur', idx === k);
+        f.classList.toggle('past', idx < k);
+        f.classList.toggle('fut', idx > k);
       });
-
     });
-
-
     wrap.style.transform = 'none';
-
     prev.disabled = k === 0;
-
-    next.disabled =
-      k === 2 * L - 1;
-
+    next.disabled = k === 2 * L - 1;
     return;
   }
-
-
-  /* DESKTOP */
 
   leaves.forEach((l, i) => {
-
-    l.classList.toggle(
-      'flip',
-      i < p
-    );
-
-    const z =
-      i < p
-        ? i
-        : L - i;
-
-    if(now){
-
-      l.style.zIndex = z;
-
-    }else{
-
-      setTimeout(() => {
-        l.style.zIndex = z;
-      }, 400);
-
-    }
-
+    l.classList.toggle('flip', i < p);
+    const z = i < p ? i : L - i;
+    if(now) l.style.zIndex = z;
+    else setTimeout(() => { l.style.zIndex = z; }, 400);
   });
-
-
-  wrap.style.transform =
-    p === 0
-      ? 'translateX(-25%)'
-      : p === L
-        ? 'translateX(25%)'
-        : 'none';
-
-
+  wrap.style.transform = p === 0 ? 'translateX(-25%)' : p === L ? 'translateX(25%)' : 'none';
   prev.disabled = p === 0;
-
   next.disabled = p === L;
-
 }
 
-
-/* =========================================================
-   CAMBIO ENTRE CELULAR Y PANTALLA GRANDE
-   ========================================================= */
-
+/* CAMBIO ENTRE CELULAR Y PANTALLA GRANDE */
 mq.addEventListener('change', e => {
-
-  if(e.matches){
-
-    k = Math.max(
-      0,
-      2 * p - 1
-    );
-
-  }else{
-
-    p = Math.ceil(k / 2);
-
-  }
-
+  if(e.matches) k = Math.max(0, 2 * p - 1);
+  else p = Math.ceil(k / 2);
   single = e.matches;
-
   render(true);
-
 });
 
-
-/* =========================================================
-   NAVEGACIÓN
-   ========================================================= */
-
+/* NAVEGACIÓN */
 function go(d){
-
   const L = leaves.length;
-
-
   if(single){
-
-    const n =
-      Math.max(
-        0,
-        Math.min(
-          2 * L - 1,
-          k + d
-        )
-      );
-
-    if(n !== k){
-
-      k = n;
-
-      render(false);
-
-    }
-
+    const n = Math.max(0, Math.min(2 * L - 1, k + d));
+    if(n !== k){ k = n; render(false); }
     return;
   }
-
-
-  const n =
-    Math.max(
-      0,
-      Math.min(
-        L,
-        p + d
-      )
-    );
-
-
-  if(n !== p){
-
-    p = n;
-
-    render(false);
-
-  }
-
+  const n = Math.max(0, Math.min(L, p + d));
+  if(n !== p){ p = n; render(false); }
 }
-
-
 prev.onclick = () => go(-1);
-
 next.onclick = () => go(1);
-
-
 add.onclick = () => {
-
   addLeaf();
-
-  if(single){
-
-    k =
-      2 * leaves.length - 2;
-
-  }else{
-
-    p =
-      leaves.length - 1;
-
-  }
-
+  if(single) k = 2 * leaves.length - 2;
+  else p = leaves.length - 1;
   render(false);
-
 };
 
-
-/* =========================================================
-   TECLADO
-   ========================================================= */
-
 document.addEventListener('keydown', e => {
-
-  if(lb.classList.contains('on')){
-
-    if(e.key === 'Escape'){
-
-      closeLightbox();
-
-    }
-
-    return;
-  }
-
-
+  if(lb.classList.contains('on')){ if(e.key === 'Escape') closeLightbox(); return; }
   if(e.target.isContentEditable) return;
-
-
-  if(e.key === 'ArrowRight'){
-    go(1);
-  }
-
-  if(e.key === 'ArrowLeft'){
-    go(-1);
-  }
-
+  if(e.key === 'ArrowRight') go(1);
+  if(e.key === 'ArrowLeft') go(-1);
 });
-
-
-/* =========================================================
-   SWIPE
-   ========================================================= */
 
 let x0 = null;
-
-document.addEventListener('pointerdown', e => {
-
-  if(lb.classList.contains('on')){
-
-    x0 = null;
-
-    return;
-  }
-
-  x0 = e.clientX;
-
-});
-
-
+document.addEventListener('pointerdown', e => { x0 = e.clientX; });
 document.addEventListener('pointerup', e => {
-
   if(x0 === null) return;
-
-
-  if(lb.classList.contains('on')){
-
-    x0 = null;
-
-    return;
-  }
-
-
-  const d =
-    e.clientX - x0;
-
+  if(lb.classList.contains('on')){ x0 = null; return; }
+  const d = e.clientX - x0;
   x0 = null;
-
-
-  if(Math.abs(d) > 70){
-
-    go(
-      d < 0
-        ? 1
-        : -1
-    );
-
-  }
-
+  if(Math.abs(d) > 70) go(d < 0 ? 1 : -1);
 });
 
-
-/* =========================================================
-   POPUP / LIGHTBOX
-   ========================================================= */
-
-const lb = $('lb');
-
-const lbImg =
-  lb.querySelector('img');
-
-const lbCap =
-  lb.querySelector('figcaption');
-
-const lbClose =
-  lb.querySelector('.lb-x');
-
-
-/* =========================================================
-   BLOQUEAR / DESBLOQUEAR PÁGINA
-   ========================================================= */
-
-function lockPage(){
-
-  document.documentElement.classList.add('lb-open');
-
-  document.body.classList.add('lb-open');
-
-}
-
-
-function unlockPage(){
-
-  document.documentElement.classList.remove('lb-open');
-
-  document.body.classList.remove('lb-open');
-
-}
-
-
-/* =========================================================
-   ABRIR FOTO
-   ========================================================= */
+/* POPUP: ver la foto en grande */
+const lb = $('lb'), lbImg = lb.querySelector('img'), lbCap = lb.querySelector('figcaption');
 
 function openLightbox(ph){
-
-  const img =
-    ph.querySelector('img');
-
+  const img = ph.querySelector('img');
   if(!img) return;
-
-
-  /*
-     Primero cargamos la imagen.
-  */
-
-  lbImg.src = img.currentSrc || img.src;
-
-  lbImg.alt = img.alt || 'Foto ampliada';
-
-
-  const cap =
-    ph.closest('.slot')
-      ?.querySelector('.cap');
-
-
-  lbCap.textContent =
-    cap
-      ? cap.textContent.trim()
-      : '';
-
-
-  /*
-     Importante:
-     bloqueamos HTML + BODY.
-     Esto evita que Samsung/Chrome
-     mueva el documento detrás del popup.
-  */
-
-  lockPage();
-
-
-  /*
-     Indicamos al navegador que el diálogo
-     está abierto.
-  */
-
-  lb.setAttribute(
-    'aria-hidden',
-    'false'
-  );
-
-
-  /*
-     Mostramos popup.
-  */
-
+  lbImg.src = img.src;
+  lbImg.alt = img.alt;
+  const cap = ph.closest('.slot').querySelector('.cap');
+  lbCap.textContent = cap ? cap.textContent.trim() : '';
   lb.classList.add('on');
-
-
-  /*
-     IMPORTANTE PARA SAMSUNG:
-     NO usamos focus() inmediatamente.
-     El focus puede provocar scroll automático
-     en algunos Chrome Android.
-
-     Primero esperamos al render y usamos
-     preventScroll.
-  */
-
-  requestAnimationFrame(() => {
-
-    requestAnimationFrame(() => {
-
-      if(
-        lb.classList.contains('on') &&
-        lbClose
-      ){
-
-        try{
-
-          lbClose.focus({
-            preventScroll:true
-          });
-
-        }catch{
-
-          /*
-             Fallback para navegadores antiguos.
-          */
-
-          lbClose.focus();
-
-        }
-
-      }
-
-    });
-
-  });
-
+  lb.querySelector('.lb-x').focus();
 }
+function closeLightbox(){ lb.classList.remove('on'); }
+lb.addEventListener('click', closeLightbox);
 
-
-/* =========================================================
-   CERRAR FOTO
-   ========================================================= */
-
-function closeLightbox(){
-
-  lb.classList.remove('on');
-
-  lb.setAttribute(
-    'aria-hidden',
-    'true'
-  );
-
-
-  /*
-     Esperamos al siguiente frame para
-     desbloquear el documento.
-
-     Esto evita que el viewport de Android
-     cambie en mitad de la animación.
-  */
-
-  requestAnimationFrame(() => {
-
-    unlockPage();
-
-  });
-
-}
-
-
-/* =========================================================
-   CLIC EN FONDO
-   ========================================================= */
-
-lb.addEventListener('click', e => {
-
-  if(e.target === lb){
-
-    closeLightbox();
-
-  }
-
-});
-
-
-/* =========================================================
-   BOTÓN X
-   ========================================================= */
-
-lbClose.addEventListener(
-  'click',
-  e => {
-
-    e.preventDefault();
-
-    e.stopPropagation();
-
-    closeLightbox();
-
-  }
-);
-
-
-/* =========================================================
-   FIGURA
-   ========================================================= */
-
-lb.querySelector('figure')
-  .addEventListener(
-    'click',
-    e => {
-
-      e.stopPropagation();
-
-    }
-  );
-
-
-/* =========================================================
-   EVITAR MOVIMIENTO TÁCTIL
-   ========================================================= */
-
-lb.addEventListener(
-  'touchmove',
-  e => {
-
-    e.preventDefault();
-
-  },
-  {
-    passive:false
-  }
-);
-
-
-/* =========================================================
-   TEXTOS
-   ========================================================= */
-
+/* TEXTOS (leyendas, título y dedicatoria)
+   Se guardan solos 1.5 s después de dejar de escribir, al tocar fuera o al tocar Guardar. */
 const savedTexts = {};
-
 const textTimers = {};
-
 const inflight = {};
 
-
 const PLAIN = (() => {
-
-  const d =
-    document.createElement('div');
-
-  try{
-
-    d.contentEditable =
-      'plaintext-only';
-
-  }catch(e){
-
-    return false;
-
-  }
-
-  return (
-    d.contentEditable ===
-    'plaintext-only'
-  );
-
+  const d = document.createElement('div');
+  try{ d.contentEditable = 'plaintext-only'; }catch(e){ return false; }
+  return d.contentEditable === 'plaintext-only';
 })();
 
-
 function applyEditable(el, on){
-
   if(el.tagName === 'INPUT') return;
-
-
-  el.contentEditable =
-    on
-      ? (
-          el.hasAttribute('data-multi') && PLAIN
-            ? 'plaintext-only'
-            : 'true'
-        )
-      : 'false';
-
+  el.contentEditable = on ? (el.hasAttribute('data-multi') && PLAIN ? 'plaintext-only' : 'true') : 'false';
 }
 
-
-const getVal = el =>
-  el.tagName === 'INPUT'
-    ? el.value
-    : el.textContent.trim();
-
+const getVal = el => el.tagName === 'INPUT' ? el.value : el.textContent.trim();
 
 function fmtDate(iso){
-
-  const m =
-    /^(\d{4})-(\d{2})-(\d{2})$/
-      .exec(iso || '');
-
-
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
   if(!m) return '';
-
-
-  return new Date(
-    +m[1],
-    +m[2] - 1,
-    +m[3]
-  ).toLocaleDateString(
-    'es',
-    {
-      day:'numeric',
-      month:'long',
-      year:'numeric'
-    }
-  );
-
+  return new Date(+m[1], +m[2] - 1, +m[3]).toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
 }
-
 
 function updateDate(el){
-
-  const t =
-    el.closest('.date')
-      .querySelector('.dtext');
-
-  t.textContent =
-    fmtDate(el.value);
-
+  const t = el.closest('.date').querySelector('.dtext');
+  t.textContent = fmtDate(el.value);
 }
-
 
 function setValue(el, text){
-
-  if(el.tagName === 'INPUT'){
-
-    el.value = text;
-
-    updateDate(el);
-
-  }else{
-
-    el.textContent = text;
-
-  }
-
+  if(el.tagName === 'INPUT'){ el.value = text; updateDate(el); }
+  else el.textContent = text;
 }
-
-
-/* =========================================================
-   BIND TEXT
-   ========================================================= */
 
 function bindText(el){
-
-  el.dataset.initial =
-    getVal(el);
-
+  el.dataset.initial = getVal(el);
 
   if(el.tagName === 'INPUT'){
-
-    el.addEventListener(
-      'change',
-      () => {
-
-        updateDate(el);
-
-        saveText(el, true);
-
-      }
-    );
-
+    el.addEventListener('change', () => { updateDate(el); saveText(el, true); });
     return;
   }
 
-
-  el.addEventListener(
-    'keydown',
-    e => {
-
-      if(
-        e.key === 'Enter' &&
-        !el.hasAttribute('data-multi')
-      ){
-
-        e.preventDefault();
-
-        el.blur();
-
-      }
-
-    }
-  );
-
-
-  el.addEventListener(
-    'input',
-    () => {
-
-      clearTimeout(
-        textTimers[el.dataset.for]
-      );
-
-
-      textTimers[el.dataset.for] =
-        setTimeout(
-          () => saveText(el, false),
-          1500
-        );
-
-    }
-  );
-
-
-  el.addEventListener(
-    'blur',
-    () => {
-
-      clearTimeout(
-        textTimers[el.dataset.for]
-      );
-
-      saveText(el, true);
-
-    }
-  );
-
+  el.addEventListener('keydown', e => {
+    if(e.key === 'Enter' && !el.hasAttribute('data-multi')){ e.preventDefault(); el.blur(); }
+  });
+  el.addEventListener('input', () => {
+    clearTimeout(textTimers[el.dataset.for]);
+    textTimers[el.dataset.for] = setTimeout(() => saveText(el, false), 1500);
+  });
+  el.addEventListener('blur', () => {
+    clearTimeout(textTimers[el.dataset.for]);
+    saveText(el, true);
+  });
 }
-
-
-/* =========================================================
-   GUARDAR TEXTO
-   ========================================================= */
 
 function saveText(el, notify){
-
-  const key =
-    el.dataset.for;
-
-  const text =
-    getVal(el);
-
-  const last =
-    key in savedTexts
-      ? savedTexts[key]
-      : el.dataset.initial;
-
-
-  if(text === last){
-
-    return Promise.resolve(true);
-
-  }
-
-
-  if(
-    inflight[key] &&
-    inflight[key].text === text
-  ){
-
-    return inflight[key].promise;
-
-  }
-
-
-  const promise =
-    (async () => {
-
-      try{
-
-        const response =
-          await fetch(
-            `${API_BASE}/api/texto`,
-            {
-              method:'PUT',
-
-              headers:{
-                'Content-Type':
-                  'application/json',
-
-                'x-album-key':
-                  ALBUM_KEY
-              },
-
-              body:JSON.stringify({
-                clave:key,
-                texto:text
-              })
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if(
-          !response.ok ||
-          !data.success
-        ){
-
-          throw new Error(
-            data.message ||
-            'Error al guardar.'
-          );
-
-        }
-
-
-        savedTexts[key] =
-          text;
-
-
-        if(notify){
-
-          showStatus(
-            'Guardado ❤️'
-          );
-
-        }
-
-
-        return true;
-
-
-      }catch(error){
-
-        console.error(error);
-
-        showStatus(
-          'No se pudo guardar: ' +
-          error.message,
-          true
-        );
-
-        return false;
-
-
-      }finally{
-
-        if(
-          inflight[key] &&
-          inflight[key].promise === promise
-        ){
-
-          delete inflight[key];
-
-        }
-
-      }
-
-    })();
-
-
-  inflight[key] = {
-    text,
-    promise
-  };
-
-
-  return promise;
-
-}
-
-
-/* =========================================================
-   QUITAR FOTO
-   ========================================================= */
-
-async function deletePhoto(ph){
-
-  if(
-    !confirm(
-      '¿Quitar esta foto del álbum?'
-    )
-  ){
-
-    return;
-
-  }
-
-
-  try{
-
-    const response =
-      await fetch(
-        `${API_BASE}/api/photo/${encodeURIComponent(
-          ph.dataset.slot
-        )}`,
-        {
-          method:'DELETE',
-
-          headers:{
-            'x-album-key':
-              ALBUM_KEY
-          }
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if(
-      !response.ok ||
-      !data.success
-    ){
-
-      throw new Error(
-        data.message ||
-        'No se pudo quitar la foto.'
-      );
-
+  const key = el.dataset.for;
+  const text = getVal(el);
+  const last = key in savedTexts ? savedTexts[key] : el.dataset.initial;
+  if(text === last) return Promise.resolve(true);
+  if(inflight[key] && inflight[key].text === text) return inflight[key].promise;
+
+  const promise = (async () => {
+    try{
+      const response = await fetch(`${API_BASE}/api/texto`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-album-key': ALBUM_KEY },
+        body: JSON.stringify({ clave: key, texto: text })
+      });
+      const data = await response.json();
+      if(!response.ok || !data.success) throw new Error(data.message || 'Error al guardar.');
+      savedTexts[key] = text;
+      if(notify) showStatus('Guardado ❤️');
+      return true;
+    }catch(error){
+      console.error(error);
+      showStatus('No se pudo guardar: ' + error.message, true);
+      return false;
+    }finally{
+      if(inflight[key] && inflight[key].promise === promise) delete inflight[key];
     }
-
-
-    ph.innerHTML =
-      '＋ Foto';
-
-    ph.classList.remove(
-      'has'
-    );
-
-    ph.classList.add(
-      'empty'
-    );
-
-
-    showStatus(
-      'Foto quitada'
-    );
-
-
-  }catch(error){
-
-    console.error(error);
-
-    showStatus(
-      'No se pudo quitar la foto: ' +
-      error.message,
-      true
-    );
-
-  }
-
+  })();
+  inflight[key] = { text, promise };
+  return promise;
 }
 
+/* QUITAR FOTO */
+async function deletePhoto(ph){
+  if(!confirm('¿Quitar esta foto del álbum?')) return;
+  try{
+    const response = await fetch(`${API_BASE}/api/photo/${encodeURIComponent(ph.dataset.slot)}`, {
+      method: 'DELETE',
+      headers: { 'x-album-key': ALBUM_KEY }
+    });
+    const data = await response.json();
+    if(!response.ok || !data.success) throw new Error(data.message || 'No se pudo quitar la foto.');
+    ph.innerHTML = '＋ Foto';
+    ph.classList.remove('has');
+    ph.classList.add('empty');
+    showStatus('Foto quitada');
+  }catch(error){
+    console.error(error);
+    showStatus('No se pudo quitar la foto: ' + error.message, true);
+  }
+}
 
-/* =========================================================
-   MODO EDICIÓN
-   ========================================================= */
-
-const editBtn =
-  $('edit');
-
+/* MODO EDICIÓN: botón Editar / Guardar */
+const editBtn = $('edit');
 
 function setEditing(on){
-
   editing = on;
-
-
-  document.body.classList.toggle(
-    'editing',
-    on
-  );
-
-
-  document
-    .querySelectorAll('[data-for]')
-    .forEach(el => {
-
-      applyEditable(el, on);
-
-    });
-
-
-  editBtn.textContent =
-    on
-      ? 'Guardar'
-      : 'Editar';
-
-
-  editBtn.setAttribute(
-    'aria-pressed',
-    String(on)
-  );
-
+  document.body.classList.toggle('editing', on);
+  document.querySelectorAll('[data-for]').forEach(el => applyEditable(el, on));
+  editBtn.textContent = on ? 'Guardar' : 'Editar';
+  editBtn.setAttribute('aria-pressed', String(on));
 }
 
+editBtn.onclick = async () => {
+  if(!editing){
+    setEditing(true);
+    showStatus('Modo edición activado ✏️');
+    return;
+  }
+  if(pendingUploads > 0){
+    showStatus('Espera, todavía se están subiendo fotos…', true);
+    return;
+  }
+  editBtn.disabled = true;
+  const els = [...document.querySelectorAll('[data-for]')];
+  els.forEach(el => clearTimeout(textTimers[el.dataset.for]));
+  const results = await Promise.all(els.map(el => saveText(el, false)));
+  editBtn.disabled = false;
+  if(results.includes(false)){
+    showStatus('No se pudo guardar todo. Intenta de nuevo.', true);
+    return;
+  }
+  setEditing(false);
+  showStatus('Todo guardado ❤️');
+};
 
-editBtn.onclick =
-  async () => {
-
-    if(!editing){
-
-      setEditing(true);
-
-      showStatus(
-        'Modo edición activado ✏️'
-      );
-
-      return;
-    }
-
-
-    if(pendingUploads > 0){
-
-      showStatus(
-        'Espera, todavía se están subiendo fotos…',
-        true
-      );
-
-      return;
-    }
-
-
-    editBtn.disabled = true;
-
-
-    const els =
-      [
-        ...document.querySelectorAll(
-          '[data-for]'
-        )
-      ];
-
-
-    els.forEach(el => {
-
-      clearTimeout(
-        textTimers[el.dataset.for]
-      );
-
-    });
-
-
-    const results =
-      await Promise.all(
-        els.map(el =>
-          saveText(el, false)
-        )
-      );
-
-
-    editBtn.disabled = false;
-
-
-    if(results.includes(false)){
-
-      showStatus(
-        'No se pudo guardar todo. Intenta de nuevo.',
-        true
-      );
-
-      return;
-    }
-
-
-    setEditing(false);
-
-
-    showStatus(
-      'Todo guardado ❤️'
-    );
-
-  };
-
-
-/* =========================================================
-   SUBIR FOTO
-   ========================================================= */
-
+/* SUBIR FOTO */
 async function uploadPhoto(f, photoSlot){
-
   if(!f) return;
+  if(!photoSlot){ showStatus('No se encontró el espacio de la foto.', true); return; }
+  if(!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)){ showStatus('Usa JPG, PNG o WebP.', true); return; }
+  if(f.size > 10 * 1024 * 1024){ showStatus('La foto no puede superar los 10 MB.', true); return; }
 
-
-  if(!photoSlot){
-
-    showStatus(
-      'No se encontró el espacio de la foto.',
-      true
-    );
-
-    return;
-
-  }
-
-
-  if(
-    ![
-      'image/jpeg',
-      'image/png',
-      'image/webp'
-    ].includes(f.type)
-  ){
-
-    showStatus(
-      'Usa JPG, PNG o WebP.',
-      true
-    );
-
-    return;
-
-  }
-
-
-  if(
-    f.size >
-    10 * 1024 * 1024
-  ){
-
-    showStatus(
-      'La foto no puede superar los 10 MB.',
-      true
-    );
-
-    return;
-
-  }
-
-
-  photoSlot.classList.add(
-    'uploading'
-  );
-
+  photoSlot.classList.add('uploading');
   pendingUploads++;
-
-
-  showStatus(
-    'Subiendo foto ❤️'
-  );
-
+  showStatus('Subiendo foto ❤️');
 
   try{
+    const formData = new FormData();
+    formData.append('slot', photoSlot.dataset.slot);
+    formData.append('foto', f);
 
-    const formData =
-      new FormData();
+    const response = await fetch(`${API_BASE}/api/upload`, {
+      method: 'POST',
+      headers: { 'x-album-key': ALBUM_KEY },
+      body: formData
+    });
+    const data = await response.json();
 
-
-    formData.append(
-      'slot',
-      photoSlot.dataset.slot
-    );
-
-
-    formData.append(
-      'foto',
-      f
-    );
-
-
-    const response =
-      await fetch(
-        `${API_BASE}/api/upload`,
-        {
-          method:'POST',
-
-          headers:{
-            'x-album-key':
-              ALBUM_KEY
-          },
-
-          body:formData
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if(
-      !response.ok ||
-      !data.success
-    ){
-
-      throw new Error(
-        data.message ||
-        data.error ||
-        'No se pudo subir la foto.'
-      );
-
+    if(!response.ok || !data.success){
+      throw new Error(data.message || data.error || 'No se pudo subir la foto.');
     }
 
-
-    const foto =
-      data.foto;
-
-
-    mostrarFoto(
-      photoSlot,
-      foto.url,
-      foto.width,
-      foto.height
-    );
-
-
-    showStatus(
-      'Foto guardada ❤️'
-    );
-
-
+    const foto = data.foto;
+    mostrarFoto(photoSlot, foto.url, foto.width, foto.height);
+    showStatus('Foto guardada ❤️');
   }catch(error){
-
     console.error(error);
-
-    showStatus(
-      'No se pudo subir la foto: ' +
-      error.message,
-      true
-    );
-
-
+    showStatus('No se pudo subir la foto: ' + error.message, true);
   }finally{
-
-    photoSlot.classList.remove(
-      'uploading'
-    );
-
+    photoSlot.classList.remove('uploading');
     pendingUploads--;
-
     file.value = '';
-
   }
-
 }
 
-
-/* =========================================================
-   MOSTRAR FOTO
-   ========================================================= */
-
-function mostrarFoto(
-  photoSlot,
-  url,
-  width,
-  height
-){
-
+/* MOSTRAR FOTO
+   La foto llena todo el espacio: todos los marcos quedan del mismo tamaño. */
+function mostrarFoto(photoSlot, url, width, height){
   photoSlot.innerHTML = '';
+  photoSlot.classList.remove('empty');
+  photoSlot.classList.add('has');
+  const img = new Image();
+  img.alt = 'Foto del álbum ❤️';
+  img.decoding = 'async';
+  img.src = url;
+  photoSlot.appendChild(img);
 
-  photoSlot.classList.remove(
-    'empty'
-  );
+  const badge = document.createElement('span');
+  badge.className = 'badge';
+  badge.textContent = '✎ Cambiar';
+  photoSlot.appendChild(badge);
 
-  photoSlot.classList.add(
-    'has'
-  );
-
-
-  const img =
-    new Image();
-
-
-  img.alt =
-    'Foto del álbum ❤️';
-
-
-  img.decoding =
-    'async';
-
-
-  img.src =
-    url;
-
-
-  photoSlot.appendChild(
-    img
-  );
-
-
-  const badge =
-    document.createElement(
-      'span'
-    );
-
-
-  badge.className =
-    'badge';
-
-
-  badge.textContent =
-    '✎ Cambiar';
-
-
-  photoSlot.appendChild(
-    badge
-  );
-
-
-  const del =
-    document.createElement(
-      'button'
-    );
-
-
-  del.className =
-    'del';
-
-
-  del.type =
-    'button';
-
-
-  del.setAttribute(
-    'aria-label',
-    'Quitar foto'
-  );
-
-
-  del.textContent =
-    '✕';
-
-
-  del.addEventListener(
-    'click',
-    e => {
-
-      e.stopPropagation();
-
-      deletePhoto(
-        photoSlot
-      );
-
-    }
-  );
-
-
-  photoSlot.appendChild(
-    del
-  );
-
+  const del = document.createElement('button');
+  del.className = 'del';
+  del.type = 'button';
+  del.setAttribute('aria-label', 'Quitar foto');
+  del.textContent = '✕';
+  del.addEventListener('click', e => { e.stopPropagation(); deletePhoto(photoSlot); });
+  photoSlot.appendChild(del);
 }
 
+file.onchange = async () => {
+  const f = file.files[0];
+  if(!f || !target){ file.value = ''; return; }
+  await uploadPhoto(f, target);
+};
 
-/* =========================================================
-   INPUT DE FOTO
-   ========================================================= */
-
-file.onchange =
-  async () => {
-
-    const f =
-      file.files[0];
-
-
-    if(
-      !f ||
-      !target
-    ){
-
-      file.value = '';
-
-      return;
-    }
-
-
-    await uploadPhoto(
-      f,
-      target
-    );
-
-  };
-
-
-/* =========================================================
-   CARGAR ÁLBUM
-   ========================================================= */
-
+/* CARGAR ÁLBUM
+   Primero se crean las hojas necesarias, luego se colocan las fotos. */
 async function loadAlbum(){
-
   try{
+    showStatus('Cargando nuestro álbum…');
 
-    showStatus(
-      'Cargando nuestro álbum…'
-    );
+    const response = await fetch(`${API_BASE}/api/album`);
+    if(!response.ok) throw new Error('No se pudo consultar el álbum.');
 
+    const data = await response.json();
+    if(!data || !data.fotos) return;
+    const textos = data.textos || {};
 
-    const response =
-      await fetch(
-        `${API_BASE}/api/album`
-      );
+    const ids = [...Object.keys(data.fotos), ...Object.keys(textos)].map(id => {
+      const m = id.match(/foto-(\d+)$/);
+      return m ? Number(m[1]) : 0;
+    });
+    const maxId = Math.max(0, ...ids);
 
+    while(nextSlotNumber - 1 < maxId) addLeaf();
 
-    if(!response.ok){
+    Object.entries(data.fotos).forEach(([slotId, foto]) => {
+      const ph = document.querySelector(`.ph[data-slot="${slotId}"]`);
+      if(ph) mostrarFoto(ph, foto.url, foto.width, foto.height);
+    });
 
-      throw new Error(
-        'No se pudo consultar el álbum.'
-      );
+    Object.entries(textos).forEach(([key, texto]) => {
+      const el = document.querySelector(`[data-for="${key}"]`);
+      if(el){ setValue(el, texto); savedTexts[key] = texto; }
+    });
 
-    }
-
-
-    const data =
-      await response.json();
-
-
-    if(
-      !data ||
-      !data.fotos
-    ){
-
-      return;
-
-    }
-
-
-    const textos =
-      data.textos || {};
-
-
-    const ids =
-      [
-        ...Object.keys(data.fotos),
-        ...Object.keys(textos)
-      ]
-      .map(id => {
-
-        const m =
-          id.match(
-            /foto-(\d+)$/
-          );
-
-        return m
-          ? Number(m[1])
-          : 0;
-
-      });
-
-
-    const maxId =
-      Math.max(
-        0,
-        ...ids
-      );
-
-
-    while(
-      nextSlotNumber - 1 <
-      maxId
-    ){
-
-      addLeaf();
-
-    }
-
-
-    /* Fotos */
-
-    Object.entries(
-      data.fotos
-    ).forEach(
-      ([slotId, foto]) => {
-
-        const ph =
-          document.querySelector(
-            `.ph[data-slot="${slotId}"]`
-          );
-
-
-        if(ph){
-
-          mostrarFoto(
-            ph,
-            foto.url,
-            foto.width,
-            foto.height
-          );
-
-        }
-
-      }
-    );
-
-
-    /* Textos */
-
-    Object.entries(
-      textos
-    ).forEach(
-      ([key, texto]) => {
-
-        const el =
-          document.querySelector(
-            `[data-for="${key}"]`
-          );
-
-
-        if(el){
-
-          setValue(
-            el,
-            texto
-          );
-
-
-          savedTexts[key] =
-            texto;
-
-        }
-
-      }
-    );
-
-
-    showStatus(
-      'Álbum cargado ❤️'
-    );
-
-
+    showStatus('Álbum cargado ❤️');
   }catch(error){
-
     console.error(error);
-
-    showStatus(
-      'No se pudo conectar con el álbum.',
-      true
-    );
-
+    showStatus('No se pudo conectar con el álbum.', true);
   }
-
 }
 
-
-/* =========================================================
-   INICIO
-   ========================================================= */
-
-for(let i = 0; i < 5; i++){
-
-  addLeaf();
-
-}
-
-
+/* INICIO */
+for(let i = 0; i < 5; i++) addLeaf();
 loadAlbum();
-
 </script>
-
 </body>
 </html>
