@@ -37,7 +37,8 @@ body{background:radial-gradient(circle at 50% 40%,#3b2a2e,#171012);color:#eee;fo
 .ph{position:relative;width:100%;height:100%;background:#2c2b31;display:flex;align-items:center;justify-content:center;text-align:center;color:#8d8a99;cursor:pointer;overflow:hidden;font-size:.95em;border-radius:.15em;transition:background .2s ease}
 .ph:hover{background:#35343b}
 .ph.has{background:#171519}
-.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.ph .blur{position:absolute;inset:-12%;background-size:cover;background-position:center;filter:blur(16px) brightness(.55)}
 /* esquineros sobre el marco */
 .ph::after{content:"";position:absolute;inset:0;pointer-events:none;--c:#f3eee3;filter:drop-shadow(0 0 .12em #000b);background:linear-gradient(135deg,var(--c) 50%,#0000 50%) 0 0/1.5em 1.5em no-repeat,linear-gradient(225deg,var(--c) 50%,#0000 50%) 100% 0/1.5em 1.5em no-repeat,linear-gradient(45deg,var(--c) 50%,#0000 50%) 0 100%/1.5em 1.5em no-repeat,linear-gradient(315deg,var(--c) 50%,#0000 50%) 100% 100%/1.5em 1.5em no-repeat}
 .ph.uploading{cursor:wait}
@@ -213,7 +214,7 @@ const cover = `
 const letterPage = `
   <div class="pg">
     <div class="letter">
-      <div class="letter-to">Para ti</div>
+      <div class="letter-to">Para ti ❤️</div>
       <div class="letter-body" spellcheck="false" data-for="carta" data-multi data-p="Escribe aquí tu carta…"></div>
     </div>
   </div>`;
@@ -222,9 +223,9 @@ function daysText(){
   const t = new Date();
   const today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
   const d = Math.round((today - START_DATE) / 86400000);
-  if(d < 0) return `Faltan ${-d} ${-d === 1 ? 'día' : 'días'} para nuestro día`;
-  if(d === 0) return 'Hoy empieza nuestra historia';
-  return `Llevamos ${d} ${d === 1 ? 'día' : 'días'} juntos`;
+  if(d < 0) return `Faltan ${-d} ${-d === 1 ? 'día' : 'días'} para nuestro día ❤️`;
+  if(d === 0) return 'Hoy empieza nuestra historia ❤️';
+  return `Llevamos ${d} ${d === 1 ? 'día' : 'días'} juntos ❤️`;
 }
 
 /* HOJA: frente + dorso.
@@ -535,7 +536,7 @@ async function uploadPhoto(f, photoSlot){
 }
 
 /* MOSTRAR FOTO
-   La foto llena todo el espacio: todos los marcos quedan del mismo tamaño. */
+   El marco siempre mide lo mismo. La foto se ve completa y los lados se rellenan con un fondo difuminado. */
 function mostrarFoto(photoSlot, url, width, height){
   photoSlot.innerHTML = '';
   photoSlot.classList.remove('empty');
@@ -544,6 +545,12 @@ function mostrarFoto(photoSlot, url, width, height){
   img.alt = 'Foto del álbum ❤️';
   img.decoding = 'async';
   img.src = url;
+
+  /* fondo difuminado con la misma foto: rellena los lados sin recortar nada */
+  const blur = document.createElement('div');
+  blur.className = 'blur';
+  blur.style.backgroundImage = `url("${url.replace(/"/g, '%22')}")`;
+  photoSlot.appendChild(blur);
   photoSlot.appendChild(img);
 
   const badge = document.createElement('span');
